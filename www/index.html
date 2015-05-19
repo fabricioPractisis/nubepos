@@ -9,19 +9,19 @@
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
 		<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.3/jquery-ui.min.js"></script>
 		<link rel="stylesheet" href="//code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css"/>
-		<script src="//cdnjs.cloudflare.com/ajax/libs/raphael/2.1.2/raphael-min.js"></script>">
+		<script src="//cdnjs.cloudflare.com/ajax/libs/raphael/2.1.2/raphael-min.js"></script>
 		<script src="//cdnjs.cloudflare.com/ajax/libs/morris.js/0.5.0/morris.min.js"></script>
-        <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
+        
         <link href="//fonts.googleapis.com/css?family=Lato:300,400,700,300italic,400italic" rel="stylesheet" type="text/css">
-        <!-- needs images, font... therefore can not be part of ui.css -->
+        
         <link rel="stylesheet" href="bower_components/font-awesome/css/font-awesome.min.css">
         <link rel="stylesheet" href="bower_components/weather-icons/css/weather-icons.min.css">
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
 		<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
         <link rel="stylesheet" href="styles/estilotemp.css">
-        <!--<script type="text/javascript" src="cordova.js"></script>--->
+        <script type="text/javascript" src="cordova.js"></script>
 		<script type="text/javascript" src="js/index.js"></script>
-        <!-- end needs images -->
+        
 		<link rel="stylesheet" href="styles/mainformated.css">
     </head>
     <body data-ng-app="app" id="app" data-custom-background data-off-canvas-nav>
@@ -32,13 +32,13 @@
 				<a href="#/" data-toggle-min-nav class="toggle-min" >
 				<i class="fa fa-bars"></i></a>
 
-				<!-- Logo -->
+				
 				<div class="logo">
 					<a href="#/">
 						<span>NubePOS</span>
 					</a>
 				</div>
-				<!-- needs to be put after logo to make it working-->
+				
 				<div class="menu-button" toggle-off-canvas>
 					<span class="icon-bar"></span>
 					<span class="icon-bar"></span>
@@ -106,25 +106,20 @@
 				</section>
             </div>
         </div>
-		<!--divs para los json ---->
 		<div id="jsonProductos" style="display: none;">{Productos:[{"Tipo5":[{"formulado_id":8,"formulado_tipo":"5","formulado_nombre":"aceite","formulado_codigo":"ac123","formulado_precio":"2.35","formulado_impuestos":"0.12","formulado_tax_id":"1","formulado_matprima":"1"},{"formulado_id":14,"formulado_tipo":"5","formulado_nombre":"agua","formulado_codigo":"777","formulado_precio":"12.5","formulado_impuestos":"0.12","formulado_tax_id":"1","formulado_matprima":"1"},{"formulado_id":9,"formulado_tipo":"5","formulado_nombre":"sal","formulado_codigo":"sa123233","formulado_precio":"0","formulado_impuestos":"0.12","formulado_tax_id":"1","formulado_matprima":"1"},{"formulado_id":10,"formulado_tipo":"5","formulado_nombre":"azucar","formulado_codigo":"az1233","formulado_precio":"2","formulado_impuestos":"0.12","formulado_tax_id":"1","formulado_matprima":"1"}]},{"Tipo3":[{"formulado_id":5,"formulado_tipo":"3","formulado_nombre":"jugo ","formulado_codigo":"j123456","formulado_precio":"1.5","formulado_impuestos":"0.12","formulado_tax_id":"1","formulado_matprima":"1"},{"formulado_id":13,"formulado_tipo":"3","formulado_nombre":"Cola","formulado_codigo":"11512829","formulado_precio":"1","formulado_impuestos":"0.12","formulado_tax_id":"1","formulado_matprima":"1"}]},{"Tipo2":[{"formulado_id":12,"formulado_tipo":"2","formulado_nombre":"dasani","formulado_codigo":"das1234","formulado_precio":"1","formulado_impuestos":"0.12","formulado_tax_id":"1","formulado_matprima":"1"},{"formulado_id":4,"formulado_tipo":"2","formulado_nombre":"gaseosa","formulado_codigo":"b123456","formulado_precio":"1","formulado_impuestos":"0.12","formulado_tax_id":"1","formulado_matprima":"1"},{"formulado_id":11,"formulado_tipo":"2","formulado_nombre":"agua sin gas","formulado_codigo":"ag1234","formulado_precio":"1.2","formulado_impuestos":"0.12","formulado_tax_id":"1","formulado_matprima":"1"},{"formulado_id":2,"formulado_tipo":"2","formulado_nombre":"agua con gas","formulado_codigo":"123456","formulado_precio":"1.5","formulado_impuestos":"0.12","formulado_tax_id":"1","formulado_matprima":"1"},{"formulado_id":3,"formulado_tipo":"2","formulado_nombre":"coca cola","formulado_codigo":"789456","formulado_precio":"0.5055","formulado_impuestos":"","formulado_tax_id":"","formulado_matprima":"1"}]},{"Tipo4":[{"formulado_id":6,"formulado_tipo":"4","formulado_nombre":"gatorade","formulado_codigo":"gat234","formulado_precio":"1.5","formulado_impuestos":"0.12","formulado_tax_id":"1","formulado_matprima":"1"},{"formulado_id":7,"formulado_tipo":"4","formulado_nombre":"v220","formulado_codigo":"v12233","formulado_precio":"1.5","formulado_impuestos":"0.12","formulado_tax_id":"1","formulado_matprima":"1"}]},{"Tipo7":[{"formulado_id":16,"formulado_tipo":"7","formulado_nombre":"fideos","formulado_codigo":"16","formulado_precio":"2","formulado_impuestos":"0.12","formulado_tax_id":"1","formulado_matprima":"1"}]},{"Tipo6":[{"formulado_id":15,"formulado_tipo":"6","formulado_nombre":"chifles","formulado_codigo":"15","formulado_precio":"12","formulado_impuestos":"0.12","formulado_tax_id":"1","formulado_matprima":"1"}]}]}</div>
 		<div id="jsonCategorias" style="display: none;">{"Categorias":[{"categoria_id":"5","categoria_nombre":"Abarrotes"},{"categoria_id":"3","categoria_nombre":"Batidos"},{"categoria_id":"2","categoria_nombre":"Bebidas"},{"categoria_id":"4","categoria_nombre":"Energizante"},{"categoria_id":"7","categoria_nombre":"Prueba shop"},{"categoria_id":"6","categoria_nombre":"Varios"}]}</div>
 		<div id="jsonformaspago" style="display: none;">{"FormaPago":[{"id":"1","nombre":"Efectivo","imagen":"Efectivo"},{"id":"2","nombre":"Tarjetas","imagen":"Tarjetas"},{"id":"3","nombre":"Cheques","imagen":"Bancos"},{"id":"4","nombre":"CxC","imagen":"CxC"},{"id":"5","nombre":"Retencion","imagen":"Retenciones1"},{"id":"9","nombre":"Cortesia","imagen":"Cortesia"},{"id":"14","nombre":"Otros","imagen":"General"}]}</div>
 		<div id='jsonmisclientes' style="display:none">{"Clientes":[{"id":"1","nombre":"Final Consumidor","cedula":"9999999999999","telefono":"5555555555","direccion":"Av. La Garza","email":"consumidor@gmail.com"},{"id":"2","nombre":"Punguil Ana","cedula":"1720101474","telefono":"022593955","direccion":"Av. Los Túneles","email":"ana@practisis.com"},{"id":"3","nombre":"padilla giovanny","cedula":"1716490246","telefono":"222222222","direccion":"conocoto","email":"giovanny.Padilla.espinoza@gmail.com"},{"id":"4","nombre":" Fabricio Carrión ","cedula":"1716620818","telefono":"0259356555","direccion":"Av. Túneles","email":""},{"id":"5","nombre":" Ana","cedula":"5555555555","telefono":"","direccion":"","email":""},{"id":"6","nombre":"García Vinicio","cedula":"1719147488","telefono":"","direccion":"","email":""},{"id":"7","nombre":"villareal jose","cedula":"1707592000","telefono":"6039200","direccion":"hshshshshsh","email":"jose@practisis.com"},{"id":"8","nombre":"S.A. Practisis","cedula":"1792108837001","telefono":"6039200000","direccion":"direccion","email":"jose@prácticos.com"},{"id":"9","nombre":"Punguil Ana","cedula":"1720101474001","telefono":"022593955","direccion":"Av. Los Túneles","email":"ana@practisis.com"}]}</div>
 		<div style='display:none;' id='jsoncaja'>{"caja":[{"idCaja":"34","open":"1"}]}</div>
-		<!------>
-        <!---<script src="scripts/vendor.js"></script>-->
-        <!---<script src="scripts/ui.js"></script>-->
-        <!---<script src="scripts/app.js"></script>-->
-		<!--<script>onDeviceReady();</script>--->
+		
 		<div class="modal fade" id="myModal" role="dialog" style='background-color:rgba(0,0,0,0.5);' data-backdrop='static'>
 		  <div class="modal-dialog modal-sm">
 			<div class="modal-content text-center" style='background-color:#000;  text-aling:center;'>
 				 <h2>Cargando...</h2>
 				 <img src='images/loader.gif' style='width:60px; margin:20px;'/>
-			</div><!-- /.modal-content -->
-		  </div><!-- /.modal-dialog -->
-		</div><!-- /.modal -->
+			</div>
+		  </div>
+		</div>
 		
     </body>
 <script>
@@ -137,17 +132,17 @@ $(document).ready(function(){
 			type: 'POST',
 			url: 'ajax/dataservice.php',
 			success: function(response){
-				//console.log(response);
+				
 				var arraydatos=JSON.parse(response);
 				$('#empresaName').html(arraydatos.empresa.nombre);
 				$('#nemp').html("Emp. "+arraydatos.empresa.num);
 				$('#jsonProductos').html(arraydatos.productos);
 				$('#jsonCategorias').html(arraydatos.categorias);
-				//$('#jsonformaspago').html(arraydatos.formaspago);
+				
 				$('#jsonmisclientes').html(arraydatos.clientes);
 				$('#jsoncaja').html(arraydatos.cajas);
 				onDeviceReady();
-				//console.log(arraydatos);
+				
 			}
 	});
 });
@@ -156,7 +151,7 @@ function centerModal(){
 	$(this).css('display', 'block');
 	var $dialog = $(this).find(".modal-dialog");
 	var offset = ($(window).height() - $dialog.height()) / 2;
-	// Center modal vertically in window
+	
 	$dialog.css("margin-top", offset);
 }
 
@@ -305,7 +300,7 @@ $('.menu-button').on('click',function(){
 		});
 	
 	function envia(donde){
-	//location.href="index.html#/"+donde;
+	
 		var lugar='';
 		$('#myModal').modal('show');
 		if(donde=='dashboard')
