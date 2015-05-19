@@ -1,0 +1,164 @@
+<style>
+.fa-edit{
+	color:#23ae89;
+}
+.fa-edit:hover{
+	color:#404041;
+}
+</style>
+<div id="mainDiv" style="margin: 0px; padding: 0px; width:100%; height: 800px; background-color: #ffffff; font-size:14px; color:#404041;">
+		<table style="width:100%;" border="0" cellpadding='10px' class='table table-striped'>
+			<tr><td colspan='3'><h3>Historial de Facturas</h3></td></tr>			
+			<tr>
+				<td style="text-align:center; vertical-align:middle; width: 550px;">
+					<table align='center' style="text-align:center;margin-left: 0px; margin-right: auto;" border="0" cellpadding="4px" cellspacing="10px">
+						<tr>
+							<td style='vertical-align:middle;'>
+								<input placeholder='Desde' type="text" class='form-control' id="fechadesde" name="fechadesde" style='margin:5px;'/>
+							</td>
+							<td style='vertical-align:middle;'>
+								<input placeholder='Hasta' type="text" class='form-control' id="fechahasta" name="fechahasta" style='margin:5px;'/>
+							</td>
+							<td  style='vertical-align:middle;'>
+								<button type='button' class="btn btn-primary" onclick="page=0; getSearch(); return false;">Filtrar</button>
+							</td>
+						</tr>
+					</table>
+				</td>
+			</tr>
+			<tr>
+				<td colspan="2">
+					<div id="detailDiv" style="height:650px; padding-top:20px; margin:0px; font-size:15px;"></div>
+				</td>
+			</tr>
+			<tr>
+				<td colspan="2" style='text-align:center;'>
+					<ul class="pagination paginacion-lg" id='paginacion'>
+					</ul>
+					<input id='totalpags' style='display:none;'/>
+				</td>
+			</tr>
+		</table>		
+</div>
+
+<script type="text/javascript">
+var page=0;
+
+$(document).ready(function(){
+$('#fechahasta,#fechadesde').datepicker({"dateFormat":"yy-mm-dd"});
+
+var fechahoy=new Date();
+fechahoy=parseInt(fechahoy.getTime())+86400000;
+fechahoy=new Date(fechahoy);
+var meshoy=parseInt(fechahoy.getMonth())+1;
+if(meshoy.toString().length<2)
+	meshoy="0"+meshoy.toString();
+var fechahoyformat=fechahoy.getFullYear()+"-"+meshoy+"-"+fechahoy.getDate();
+
+//console.log(fechahoy.getTime());
+var fechamenos=parseInt(fechahoy.getTime())-(7*86400000);
+//console.log(fechamenos);
+var fechaanterior=new Date(fechamenos);
+var mesant=parseInt(fechaanterior.getMonth())+1;
+if(mesant.toString().length<2)
+	mesant="0"+mesant.toString();
+var fechaantformat=fechaanterior.getFullYear()+"-"+mesant+"-"+fechaanterior.getDate();
+
+$('#fechadesde').val(fechaantformat);
+$('#fechahasta').val(fechahoyformat);
+
+getSearch();
+});
+
+function getSearch(){
+	//console.log($('#fechadesde').val());
+	var filtrodesde=new Date($('#fechadesde').val());
+	//console.log(filtrodesde);
+	filtrodesde=filtrodesde.getTime();
+	var filtrohasta=new Date($('#fechahasta').val());
+	filtrohasta=filtrohasta.getTime();
+	var desde=15*page;
+	var queryextra=' id is not NULL';
+	if(filtrodesde!='')
+		queryextra+=' and fecha >='+filtrodesde+' and fecha <='+filtrohasta+' ';
+		
+	var db = window.openDatabase("Database", "1.0", "PractisisMobile", 200000);
+	db.transaction(function(tx){
+		tx.executeSql('SELECT * FROM FACTURAS WHERE '+queryextra+' ORDER BY id desc',[],function(tx,result){
+			$('#paginacion').html('');
+			var npags=Math.ceil(result.rows.length/15);
+			$('#totalpags').val(npags);
+			$('#paginacion').append("<li onclick='CambiarPagina(-1);'><span class='enabled' id='atras'>&laquo;</span></li>");
+			for(var j=0;j<npags;j++){
+				var act='';
+				if(page==j)
+					act='active';
+				$('#paginacion').append("<li class='"+act+"' onclick='CambiarPagina("+parseInt(j)+");'><span class='enabled'>"+parseInt(j+1)+"</span></li>");
+			}
+			$('#paginacion').append("<li onclick='CambiarPagina(-2);'><span class='enabled' id='adelante'>&raquo;</span></li>");
+		});
+	},errorCB,successCB);
+	
+	var miquery='SELECT * FROM FACTURAS WHERE '+queryextra+' ORDER BY id desc LIMIT '+desde+',15;';
+	console.log(miquery);
+	
+	db.transaction(function(tx){
+	tx.executeSql(miquery,[],function(tx,results){
+		//console.log(results);
+		var inhtml='';
+		for (var i=0; i < results.rows.length; i++){
+			var row = results.rows.item(i);
+			console.log(row.fecha);
+			var timefecha=new Date(row.fecha);
+			var mes=timefecha.getMonth()+1;
+			if(mes.toString().length<2)
+				mes="0"+mes.toString();
+			var fechaformat=timefecha.getDate()+"/"+mes+"/"+timefecha.getFullYear()+" "+timefecha.getHours()+":"+timefecha.getMinutes()+":"+timefecha.getSeconds();
+			//console.log(row);
+			var func="EditarFactura("+row.id+");";
+			var datosfact=JSON.parse(row.fetchJson);
+			var totalf=parseFloat(datosfact.Pagar[0].factura.total).toFixed(2);
+			inhtml+='<tr><td>'+fechaformat+'</td><td>'+row.clientName+'</td><td>'+row.RUC+'</td><td style="text-align:right;">'+totalf+'</td><td><span class="fa fa-edit" style="cursor:pointer;" onclick="'+func+'"></span></td></tr>';
+		}
+		//alert(inhtml);
+		LlenarTablaFacturas(inhtml);
+	});
+	},errorCB,successCB);
+}
+
+function LlenarTablaFacturas(datos){
+	$('#detailDiv').html("<table align='center' class='table'><tr><th>Fecha</th><th>Cliente</th><th>RUC</th><th style='text-align:right;'>Total $USD</th><th><span class='fa fa-cog'></span></th>"+datos+"</table>");
+}
+
+function CambiarPagina(arg){
+	//console.log($('#totalpags').val());
+	if(arg==-1){
+		if((page-1)>=0){
+			page--;
+			getSearch();
+		}
+	}else if(arg==-2){
+		//console.log($('#totalpags').val());
+		if((page+1)<parseInt($('#totalpags').val())){
+			page++;
+			getSearch();
+		}
+	}else{
+		page=arg;
+		getSearch();
+	}
+	
+}
+
+$(document).keyup(function(event){
+	if(event.keyCode === 13){
+		getSearch();
+		}
+});
+
+function EditarFactura(idfactura){
+	$('#content').load("views/facturacion/editarfactura.html",function(){
+		VerDatosFactura(idfactura);
+	});
+}
+</script>

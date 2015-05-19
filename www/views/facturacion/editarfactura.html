@@ -1,0 +1,225 @@
+<div id="mainDiv" style="margin: 0px; padding: 0px; width:100%; height: 800px; background-color: #ffffff; font-size:14px; color:#404041;">
+	<table class='table'>
+		<tr>
+			<td colspan='2'>
+				<h3 id='numerofactura'>Factura No. 101-02-001</h3>
+				<input type='hidden' style='display:none;' id='idfactura'/>
+			</td>
+		</tr>
+		<tr>
+			<td>
+			<div class='input-group'><span class='input-group-addon'><b>Cliente</b> </span><input type='text' name='cliente' disabled='disabled' value="Ana Punguil" class='form-control' id='cliente'/></div>
+			</td>
+			<td>
+			<div class='input-group'><span class='input-group-addon'><b>Fecha</b> </span><input type='text' name='fecha' disabled='disabled' value="2015-02-25" class='form-control' id='fecha'/></div>
+			</td>
+		</tr>
+		<tr>
+			<td colspan='2'>
+				<div style='width:80%; text-align:right; margin-left:auto; margin-right:auto;'>
+				<table class='table table-striped' style='text-align:center; margin-left:auto; margin-right:auto;'>
+					<thead><th>Producto</th><th>Cantidad</th><th style='text-align:right;'>Subtotal $USD</th><th style='text-align:right;'>Total $USD</th></thead>
+					<tbody id='cuerpodetalle'>
+					</tbody>
+				</table>
+				<div class='totaldolares' style='margin-left:auto;'><span id='total'></span></div>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td colspan='2' style='text-align:center;'>
+			<button class='btn btn-primary btn-sm' onclick='MostrarFormasPago();'>Cambiar Forma Pago</button>
+			</td>
+		</tr>
+	</table>
+	<div style='background-color:rgba(0,0,0,0.8); ' class="modal fade" id="divformaspago" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="false">
+		<div class="modal-dialog" style='width:35%;'>
+		<div class='modal-content text-center'>
+			<div style='padding:20px;'>
+			<span class='fa fa-arrow-right' style='position:absolute; right:10px; top:5px;' onclick='$("#divformaspago").modal("hide");'></span>
+			<h3 style='color:#2e6da4;'>Formas de Pago</h3>
+			<table id='tablaformaspago'>
+			</table>
+			<table class="cuadrototal" border="0" cellpadding="0px" cellspacing="0px">
+				<tr>
+					<td class="totalsmall" colspan='2' align='center' valign='middle' style='font-size:24px;'>
+					<table class="totalvista" border="0" cellpadding="0" cellspacing="0" align='center'>
+						<tr>
+						<td>TOTAL&nbsp;</td>
+						<td id="invoiceTotal" class="payOverview">0.00</td>
+						</tr>
+					</table>
+					</td>
+				</tr>
+				<tr>
+								<td class="vue" style='padding-right:18px; border-top-right-radius:0px; border-bottom-right-radius:0px; background-color:#E0DEDE;' align='right'>
+									 PAGADO
+								</td>
+								<td id="invoicePaid" class='vue' style='padding-left:20px; border-top-left-radius:0px; border-bottom-left-radius:0px;' align='right'>
+									0.00
+								</td>
+				</tr>
+				<tr >
+								<td id="invoiceDebt" class="vue" style='padding-right:18px; border-top-right-radius:0px; border-bottom-right-radius:0px; background-color:#E0DEDE;' align='right'>
+									FALTANTE
+								</td>
+								<td id="changeFromPurchase" class='vue' style='padding-left:20px; border-top-left-radius:0px;border-bottom-left-radius:0px;' align='right'>
+									0
+								<div id='invoiceTotal' style='display:none;'></div>
+								</td>
+				</tr>
+			</table>
+			<div style='text-align:center; margin-top:10px;'>
+				<button type='button' class='btn btn-small btn-danger'>Guardar Cambios</button>
+			</div>
+			</div>
+		</div>
+		</div>
+	</div>
+</div>
+<script>
+	$(document).ready(function(){
+		ColocarFormasPago();
+	});
+	function MostrarFormasPago(){
+		$('#forma_1').click();
+		$('#divformaspago').modal("show");
+	}
+	function ColocarFormasPago(){
+	var formaspago=$('#jsonformaspago').html();
+	var evalJson=JSON.parse(formaspago);
+	//console.log(evalJson);
+	for(var k in evalJson){
+		var x = 1;
+		var mihtml='';
+		for(var j in evalJson[k]){
+			//alert(evalJson[k][j]+id);
+				mihtml+= '<tr>';
+				mihtml+= '<td class="columna1">';
+				mihtml+= '<div id="paymentCategory-'+evalJson[k][j].id+'" class="paymentCategories" onclick="changePaymentCategory(\''+evalJson[k][j].id+'\',\''+evalJson[k][j].imagen+'\'); return false;" style="height:100%; background-color: #D2D2D2; border-top-left-radius: 10px; border-bottom-left-radius: 10px; border: 1px solid #cccccc;">';
+				mihtml+= '<table style="width: 100%; height: 100%;" cellspacing="0px" cellpadding="0px">';
+			    mihtml+= '<tr style="cursor:pointer;">';
+				mihtml+= '<td style="width:20%; height:100% text-align: right; font-size: 12px; font-weight:400; color:#58595B;"><img id="pagos_'+evalJson[k][j].imagen+'" class="originalImage"  style="margin-left:20px;" alt="" src="images/'+(evalJson[k][j].imagen)+'.png"/></td>';
+				mihtml+= '<td class="textoformapago" id="forma_'+evalJson[k][j].id+'">';
+				mihtml+=evalJson[k][j].nombre;
+				mihtml+= '</td>';
+				mihtml+= '</tr>';
+				mihtml+= '</table>';
+				mihtml+= '</div>';
+				mihtml+= '</td>';
+				mihtml+= '<td class="columna2">';
+				mihtml+= '<div style="height:100%; background-color:#F7F7F7; border-top-right-radius: 10px; border-bottom-right-radius:10px; border:1px solid #CCCCCC; text-align:center; padding-right:10px;">';
+				mihtml+= '<input class="paymentMethods" paymentMethod="'+evalJson[k][j].nombre+'" idPaymentMethod="'+evalJson[k][j].id+'" id="payment'+evalJson[k][j].nombre.replace(" ","")+'" style="height:100%; width:100%; background:transparent; border:0px; text-align:right;" placeholder="0.00" value="" onclick="CambiarMetodo('+"'"+evalJson[k][j].nombre.replace(" ","")+"'"+');" type="number" min="0.00" step="0.10" onfocus="this+select();" min="0" onkeypress="return soloNumerost(event);"/>';
+				mihtml+= '</div>';
+				mihtml+= '</td>';
+				mihtml+= '</tr>';
+				x++;
+		}
+	}
+	$('#tablaformaspago').html(mihtml);
+	/*var evalJson = eval(formaspago);
+	for(var k in evalJson){
+		alert(evalJson[k].id);
+	}*/
+}
+function changePaymentCategory(index,nombre){
+	$('.paymentMethods').each(function(){
+		if($(this).attr('idPaymentMethod')==index){
+			$(this).click();
+		}
+	});
+	
+	var value = 0;
+	$('.paymentMethods').each(function(){
+		if($(this).val() != 0 && $(this).val() != '' && $(this).val() != null){
+			value += parseFloat($(this).val());
+			}
+		});
+	updateForm(value);
+	//$('.buttonsPayment').click();
+}
+
+function updateForm(value){
+	value = parseFloat(value);
+	var total = parseFloat($('#invoiceTotal').html());
+	var change = (value - total);
+	
+	if(value < total){
+		$('#invoiceDebt').html('FALTANTE');
+		change = Math.abs(change);
+		$('#invoicePaid').html(value.toFixed(2));
+		$('#cardValue').val(change.toFixed(2));
+		$('#chequeValue').val(change.toFixed(2));
+		$('#valueCxX').val(change.toFixed(2));
+		}
+	else if(value > total){
+		$('#invoiceDebt').html('VUELTO');
+		change = Math.abs(change);
+		$('#invoicePaid').html(value.toFixed(2));
+		$('#cardValue').val(0);
+		$('#chequeValue').val(0);
+		}
+	else{
+		if(value == total){
+			$('#invoiceDebt').html('VUELTO');
+			change = Math.abs(change);
+			$('#invoicePaid').html(value.toFixed(2));
+			$('#cardValue').val(0);
+			$('#chequeValue').val(0);
+			}
+		}
+
+	$('#changeFromPurchase').html(change.toFixed(2));
+}
+
+function CambiarMetodo(cual){
+	//$("#paymentCategory-"+cual).click();
+	var nombre=$('#payment'+cual).attr('paymentMethod');
+	var index=$('#payment'+cual).attr('idPaymentMethod');
+	var idimagen=$('#paymentCategory-'+index+' .originalImage').attr('id').split('_');
+	//alert(nombre);
+	$('.originalImage').each(function(){
+		var getImage = $(this).attr('id').split('_');
+		$(this).attr('src','../../images/'+ getImage[1] +'.png');
+		});
+
+	$('#pagos_'+ nombre).attr('src', '../../images/'+idimagen[1]+'Hover.png');
+	$('.textoformapago').css('color','#58595B');
+	$('#forma_'+index).css('color','#FFF');
+	$('.functionalityDiv').hide();
+	$('#functionality-'+ index).show();
+	$('.columna1 div').each(function(){
+		$(this).attr('class','paymentCategories');
+		$(this).css('backgroundColor','');
+	});
+	$('#paymentCategory-'+ index).attr('class','categoryChosen');
+	var faltante=parseFloat($('#invoiceTotal').html());
+	var pagado=0;
+	$('.paymentMethods').each(function(){
+		var partepago=0;
+		if($(this).val()!=''){
+			//if(nombre=='Efectivo')
+				//$(this).val('0.00');
+			partepago=parseFloat($(this).val());
+		}
+		faltante-=partepago;
+		pagado+=partepago;
+	});
+	
+	if(faltante>0){
+		if($('#payment'+nombre).val()=='')
+			$('#payment'+nombre).val(faltante.toFixed(2));
+		else{
+				if(nombre=='Efectivo')
+					$('#payment'+nombre).select();
+				else{
+					$('#payment'+nombre).val(faltante.toFixed(2));
+					$('#payment'+nombre).select();
+				}
+			}
+			
+	}
+	$('#payment'+cual).select();
+}
+	
+</script>

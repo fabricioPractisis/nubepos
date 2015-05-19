@@ -1,0 +1,554 @@
+<script>
+	var dispositivo = navigator.userAgent.toLowerCase();
+	/*var esMovil=true;*/
+	var esMovil=false;
+	if( dispositivo.search(/iphone|ipod|ipad|android/) > -1 ){
+	esMovil=true;
+	}
+</script>
+<script type="text/javascript" src="scripts/funciones.js"></script>
+<script type="text/javascript" src="scripts/payment.js"></script>
+<script type="text/javascript" src="cordova.js"></script>
+<div class="page page-default" style='position:relative;'>
+<div class="row">
+<div class="col-sm-12">
+    <audio id="beep1" src="views/nubepos/sonidos/blip8.mp3" preload="auto"></audio>
+	<audio id="beep2" src="views/nubepos/sonidos/jinglebutton.wav" preload="auto"></audio>
+	<audio id="beep3" src="views/nubepos/sonidos/button-47.wav" preload="auto"></audio>
+	<audio id="beep4" src="views/nubepos/sonidos/eliminar.wav" preload="auto"></audio>
+	<audio id="beep5" src="views/nubepos/sonidos/button-16.wav" preload="auto"></audio>
+	<audio id="beep6" src="views/nubepos/sonidos/button-19.wav" preload="auto"></audio>
+	<div style='display:none;' id='jsonclientes'></div>
+	<div class='central' id='central'>
+	<div style="position:relative; display:block; width:100%; height:100%; background-color:rgba(255,255,255,0.7); z-index:50; text-align:center; display:none;" id="contentCaja2">
+			<div class='header' style='width:60%;  margin-left:auto; margin-right:auto; min-height:50px;'>Apertura de Caja</div>
+			<div style="position:relative; left:0px; top:0px; text-align:center;" id="loadCaja">
+			<div id="contentCampos" align="center" style='background-color:#FFF; color:#777; padding:20px; width:60%; margin-left:auto; margin-right:auto; border:1px solid #777;'>
+				<table cellpadding="0" cellspacing="5px" width="100%" align='center'>
+					<tr>
+						<td  align="left">
+							<label class="textosApertura" type="1"> Número de establecimiento </label>
+						</td>
+						<td  align="left">
+							<table>
+								<tr>
+								<td>
+								<table>
+								<tr>
+									<td>
+										<label class="textosApertura" type="1">(# estab) </label>
+									</td>
+								</tr>
+								<tr>
+									<td>
+									<input id="inpEstablecimiento1" placeHolder="001" value='001' pattern="[0-9]*" />
+									</td>
+								</tr>
+								</table>
+								</td>
+								<td>
+									<table>
+									<tr>
+										<td>
+										<label class="textosApertura" type="1">(pto venta) </label>
+										</td>					
+									</tr>
+									<tr>
+										<td>
+										<input id="inpEstablecimiento2" placeHolder="000" value='001' pattern="[0-9]*" step='any'/>
+										</td>
+									</tr>
+									</table>													
+								</td>
+								<td>					
+									<table>
+									<tr>
+										<td>
+										<label class="textosApertura" type="1">(# factura) </label>
+										</td>
+									</tr>
+									<tr>
+										<td>
+										<input step='any' id="inpEstablecimiento3" placeHolder="200" value='001' pattern="[0-9]*" />
+										</td>
+									</tr>
+									</table>
+								</td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+					<tr>
+						<td colspan="2">
+						<div class="espacio"></div>
+						</td>
+					</tr>
+					<tr>
+						<td align="left">
+						<label class="textosApertura" type="2"> Número de autrorización </label>
+						</td>
+						<td  align="left">
+						<input id="inpAutorizacion"  placeHolder="exp. 231" />
+						</td>
+					</tr>
+					<tr>
+						<td colspan="2">
+						<div class="espacio"></div>
+						</td>
+					</tr>
+					<tr>
+						<td  align="left">
+						<label class="textosApertura" type="3"> Valor de apertura </label>
+						</td>
+						<td  align="left">
+						<input id="inpValor" placeHolder="exp. 231" />
+						</td>
+					</tr>
+					<tr>
+						<td colspan="2">
+						<div class="espacio"></div>
+						</td>
+					</tr>
+					<tr>
+						<td colspan="2" align="center">
+						<div id="btnSaveInclude" class='actionredbutton' style='width:90px; min-width:90px; height:30px; min-height:30px; padding-top:5px; margin-top:10px;' onclick='AbrirCaja();'>
+							Abrir Caja
+						</div>
+						</td>
+					</tr>
+				</table>
+				</div>
+			</div>
+	</div>
+	<div class='scan' id='scan' onclick='verScan()'>
+		<div id='divInScan' style='margin:10px; width:100%; height:100%;'>
+		<div class='boton' id='btn_scan'><img src='images/simboloscan.png' style='height:30px; margin-right:5px;'/>SCAN</div>
+	<!--<img src='images/btnscan.png' style='cursor:pointer; width:100%;'/>-->
+		</div>
+	</div>
+	<div class='buscador' id='buscador'><div id='divInBuscador' style='margin:10px; width:100%; height:100%;'><input type='text' id='inputbusc' name='inputbusc' placeholder='Buscar' onkeyup='BuscarSugerencias(this.value,event);'/></div>
+	<!---<img src='images/atras.png' style='cursor:pointer; position:absolute; top:0px; right:0px; z-index:100; display:block;' onclick='window.history.back();' id='backmenu'/>-->
+	</div>
+	<div class='numpad' id='numpad'>
+		<div style='margin:10px; width:100%; height:100%;' id='divInNumPad'>
+			<div class='fondocalculadora' align='center'>
+				<div class='cantidad'></div>
+					<div class='contnumero' align='center'>
+									<img src='images/fondonum.png' class='fondonum' id='f_1'/>
+									<img src='images/fondonumhover.png' class='fondonum' id='fh_1' style='display:none;'/>
+									<div class='numero' cual='1'>1</div>
+					</div>
+					<div class='contnumero' align='center'>
+									<img src='images/fondonum.png' class='fondonum' id='f_2'/>
+									<img src='images/fondonumhover.png' class='fondonum' id='fh_2' style='display:none;'/>
+									<div class='numero' cual='2'>2</div>
+					</div>
+					<div class='contnumero' align='center'>
+									<img src='images/fondonum.png' class='fondonum' id='f_3'/>
+									<img src='images/fondonumhover.png' class='fondonum' id='fh_3' style='display:none;'/>
+									<div class='numero' cual='3'>3</div>
+					</div>
+							<div class='contnumero' align='center'>
+								<img src='images/fondonum.png' class='fondonum' id='f_4'/>
+								<img src='images/fondonumhover.png' class='fondonum' id='fh_4' style='display:none;'/>
+								<div class='numero' cual='4'>4</div>
+							</div>
+							<div class='contnumero' align='center'>
+								<img src='images/fondonum.png' class='fondonum' id='f_5'/>
+								<img src='images/fondonumhover.png' class='fondonum' id='fh_5' style='display:none;'/>
+								<div class='numero' cual='5'>5</div>
+							</div>
+							<div class='contnumero' align='center'>
+								<img src='images/fondonum.png' class='fondonum' id='f_6'/>
+								<img src='images/fondonumhover.png' class='fondonum' id='fh_6' style='display:none;'/>
+								<div class='numero' cual='6'>6</div>
+							</div>
+							<div class='contnumero' align='center'>
+								<img src='images/fondonum.png' class='fondonum' id='f_7'/>
+								<img src='images/fondonumhover.png' class='fondonum' id='fh_7' style='display:none;'/>
+								<div class='numero' cual='7'>7</div>
+							</div>
+							<div class='contnumero' align='center'>
+								<img src='images/fondonum.png' class='fondonum' id='f_8'/>
+								<img src='images/fondonumhover.png' class='fondonum' id='fh_8' style='display:none;'/>
+								<div class='numero' cual='8'>8</div>
+							</div>
+							<div class='contnumero' align='center'>
+								<img src='images/fondonum.png' class='fondonum' id='f_9'/>
+								<img src='images/fondonumhover.png' class='fondonum' id='fh_9' style='display:none;'/>
+								<div class='numero' cual='9'>9</div>
+							</div>
+							<div class='contnumero' align='center'>
+								<img src='images/fondonum.png' class='fondonum' id='f_0'/>
+								<img src='images/fondonumhover.png' class='fondonum' id='fh_0' style='display:none;'/>
+								<div class='numero' cual='0'>0</div>
+							</div>
+							<div class='contnumero' align='center'>
+								<img src='images/fondonum.png' class='fondonum' id='f_p'/>
+								<img src='images/fondonumhover.png' class='fondonum' id='fh_p' style='display:none;'/>
+								<div class='numero' cual='p'>.</div>
+							</div>
+							<div class='contnumero' align='center'>
+								<img src='images/borrar.png' class='fondonum' id='f_d'/>
+								<img src='images/borrarhover.png' class='fondonum' id='fh_d' style='display:none;'/>
+								<div class='numero' cual='d'>
+								</div>
+							</div>
+			</div>
+		</div>
+	</div>
+	<div class='detalle' id='detalle'>
+		<div class='divDetalle'>
+			<table width='100%' cellpadding='0px' cellspacing='0px'>
+				<tr>
+					<td>
+						<table cellpadding='0px' cellspacing='0px' width='94%' align='left' id='headerdetalle'>
+							<tr>
+								<td style="width:5%; border-top-left-radius:15px;" class='encabezadorojo'></td>
+								<td style="width:20%; border-right:1px solid #909192;" class='encabezadorojo'>Cant.</td>
+								<td class='encabezadorojo' style="width:50%; text-align:left; border-right:1px solid #909192; padding-left:20px;">Producto</td>
+								<td class='encabezadorojo' style="text-align:right; padding-right:20px; border-top-right-radius:15px;">US$ Total</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td class='celdagris' align='center' style='position:relative;'>
+						<div class='contentdetalle' id='contentdetalle'>
+							<table id="tablaCompra" cellpadding='0px' cellspacing='0px' width='100%' align='left'>
+							</table>
+						</div>
+						<div id='navegadoresv'>
+						<table cellpadding='0px' cellspacing='0px'>
+							<tr><td valign='bottom'><img src='images/navarriba.png' style='height:80px; cursor:pointer;' id='nav_up' onmousedown='DetalleAbajo();'/></td></tr>
+							<tr><td valign='top'><img src='images/navabajo.png' style='height:80px;cursor:pointer;' id='nav_down'  onclick='DetalleArriba();' onmousedown='DetalleArriba();'/></td></tr>
+						</table>
+						</div>
+					</td>
+				</tr>
+			</table>
+		</div>
+	</div>
+	<div class='descuento' id='descuento'>
+		<div id='divInDesc' style='margin:10px; width:45%; height:100%; float:left;'>
+		<div class='boton' id='btn_descuento' onclick="showPopup(); return false;">DESC.</div>
+		</div>
+		<div id='divInCierre' style='margin:10px; width:45%; height:100%; float:left;'>
+		<div class='boton' id='btn_cierre' onclick='$("#ModuloCierre").show();'>CIERRE</div>
+		</div>
+	</div>
+	<div class='totalpagar' id='totalpagar'>
+	<div id='dinInTotalPagar' style='margin:10px;'>
+		<div class='conttotal' id='conttotal'>
+		<div>Valor a pagar:</div>
+		<div class='total' id='total'></div>
+		</div>
+		<div class='botonr' id='btn_pagar' style='width:47%; float:left;' onclick="AntesDePagar(); return false;">PAGAR</div>
+	</div>
+	</div>
+	<div class='productos' id='productos' align='center'>
+		<div style='position:relative; border-radius:15px; background-color:#B9BDBF; width:98%; margin-right:auto; margin-left:auto;'>
+		<div id="loader" style="display:none; position: absolute; width: 100%; height: 100%; top: 0; left: 0; background: rgba(255,255,255,0.8); text-align: center;">
+				<img alt="" style="height:20%;" src="images/loading.gif"/>
+		</div>
+		<table cellspacing="0px" cellpadding="0px" width='95%' style='margin-top:10px;'>
+			<tr>
+				<td>
+					<table cellpadding='0px' cellspacing='0px'>
+						<tr>
+							<td>
+								<img onclick="slider('izquierda'); return false;" src='images/izquierdacateg.png' class='direccionales'/>
+							</td>
+							<td>
+								<div id='listaCategorias'>
+									<div id='contenidoCategorias'></div>
+								</div>
+							</td>
+							<td>
+								<img onclick="slider('derecha'); return false;" src='images/derechacateg.png' class='direccionales'/>
+							</td>
+						</tr>
+					</table>
+				</td>
+			</tr>
+			<tr>
+				<td class='contentListaProductos' id='contentListaProductos'>
+					<table cellspacing='0px' cellpadding='0px'>
+							<tr>
+							<td style='display:none;'><img src='images/izquierdahover.png' data-dir="left" class="directionProducts" id='pagizq' style='visibility:hidden;' onclick='PlaySound(3);'/></td>
+							<td>
+								<div id='listaProductos'></div>
+							</td>
+							<td style='display:none;'><img src='images/derechahover.png' data-dir="right" class="directionProducts" id='pagder' style='visibility:hidden;' onclick='PlaySound(3);'/></td>
+							</tr>
+					</table>
+					<div id='navegadoresh' class='celdagrish'>
+						<table cellspacing='0px' cellpadding='0px' width='99%' align='center'>
+							<tr>
+								<td align='right'><img src='images/navizq.png' style='cursor:pointer; margin-top:5px;' id='nav_izq'data-dir="left" class="directionProducts"/></td>
+								<td align='left'><img src='images/navder.png'  data-dir="right" class="directionProducts" style='cursor:pointer; margin-top:5px;' id='nav_der'/></td>
+								<td></td>
+							</tr>
+						</table>
+					</div>
+				</td>
+			</tr>
+		</table>
+		</div>
+	</div>
+	<div id="resultBuscador" class='resultBuscador'>
+		<table id='tableresults' width='100%' cellspacing='0px' cellpadding='0px'>
+		</table>
+	</div>
+	<div id="popup" style="display: none; background: rgba(255,255,255,0.8); width: 100%; height: 100%; top: 0; left: 0; position: absolute; z-index: 20000; text-align: center;">
+		<br/>
+		<br/>
+		<div id="popupDiscount" style="margin-top: 1000px; box-shadow: 0px 0px 5px 0px rgba(50, 50, 50, 0.75); background-color: #ffffff; color: #000000; margin-left: auto; margin-right: auto;">
+			<div class="encabezadorojo" style='position:relative; height:30px; font-size:20px;'>Descuentos<img src='images/xcierre.png' style='position:absolute; top:3px; right:5px; cursor:pointer;' onclick='$("#popup").fadeOut();'/></div>
+			<br/>
+			<div id="discountAdded" style="display: none; text-align: center; color: green">OK!</div>
+			<table cellspacing='0px' cellpadding='0px' align='center' width='90%'>
+				<tr>
+					<td class='labelgris'><div id='labeladdDiscount' style='font-size:16px; height:25px;'>$Total descuento</div></td>
+					<td align='left'><input type="number" min='0' onkeypress='soloNumerost(event);'  id="addDiscount" value="0.00" class='valor' style='width:100%; font-size:16px; text-align:right; padding-right:10px; height:25px;' onclick='this.select();'/></td>
+				</tr>
+			</table>
+			<br/>
+			<br/>
+			<div style='background-color:#E0DEDE; padding-top:20px; padding-bottom:20px;'>
+			<table style="margin-left: auto; margin-right: auto;">
+				<tr>
+					<td>
+						<div style="position: relative;">
+							<div id='btn_agregar' class='actiongreenbutton' onclick="addDiscount(); return false;" style='padding:5px; font-size:18px;'>Grabar
+							</div>
+						</div>
+					</td>
+					<td>
+						<div style="position: relative;">
+							<div class='actionredbutton' onclick="closePopup(); return false;" id='btn_cancelar' style='padding:5px; font-size:18px;'>Cancelar</div>
+						</div>
+					</td>
+				</tr>
+			</table>
+			</div>
+		</div>
+	</div>
+	
+	
+	<div id="popupScan" style="display: none; background: rgba(255,255,255,0.8); width: 300px; height: 100%; top: 0; left: 0; position: absolute; z-index: 20000; text-align: center;">
+		<br/>
+		<br/>
+		<div id="popupScaner" style="margin-top: 1000px; box-shadow: 0px 0px 5px 0px rgba(50, 50, 50, 0.75); background-color: #ffffff; color: #000000; margin-left: auto; margin-right: auto;">
+			<div class="encabezadorojo" style='position:relative; height:30px; font-size:20px;'>SCAN<img src='images/xcierre.png' style='position:absolute; top:3px; right:5px; cursor:pointer;' onclick='$("#popupScan").fadeOut();'/></div>
+			<div style='background-color:#E0DEDE; padding-top:20px; padding-bottom:20px;'>
+			<table style="margin-left: auto; margin-right: auto;">
+				<tr>
+					<td>
+						<input type="button" value="Scanear" onclick="dale();" ontouch="dale();" style="margin-top: 230px; width: 100px; height: 30px; font-size: 1em"/>
+					</td>
+					<td>
+						<div style="position: relative;">
+							<div class='actionredbutton' onclick='$("#popupScan").fadeOut();' id='btn_cancelar' style='padding:5px; font-size:18px;'>Cancelar</div>
+						</div>
+					</td>
+				</tr>
+			</table>
+			</div>
+		</div>
+	</div>
+	
+	
+	
+	
+	<input type='hidden' style='display:none;' value='001-001-000050' id='nextnumber'/>
+	<div id="taxes" style="display: none;">
+		<input id="impuesto-1" type="text" value="1|IVA|0.12">
+		<input id="impuesto-2" type="text" value="2|Servicio|0.1">
+	</div>
+	<div id="factura">
+		<input type="hidden" id="subtotalSinIva" value="0"/>
+		<input type="hidden" id="subtotalIva" value="0"/>
+		<input type="hidden" id="descuentoFactura" value="0"/>
+		<input type="hidden" id="totalmiFactura" value="0"/>
+	</div>
+	<div id="controller">
+		<input type="hidden" id="pager" value="1"/>
+		<input type="hidden" id="category" value="1"/>
+		<input type="hidden" id="maxPage" value="1"/>
+	</div>
+	<div id="paymentModule">
+<div id="pay" class="popupPayment">
+<br/>
+<br/>
+<div id="newCliente"></div>
+	<div class="ventanaprincipal">
+		<!--<div id="positionClosePreCuenta" style="position: absolute; left: 96%; top: 0%; z-index: 20;"><img onclick="cancelPayment(); return false;" style="cursor: pointer;" src="../images/xcierre.png"/></div>-->
+		<div style="display: none;" id="json"></div>
+		<form id="referenceToReset">
+        <input id="acc" name="acc" type="hidden" value="">
+        <input id="echo" name="echo" type="hidden" value=""> 
+			<table style="width: 100%; color: #000000; empty-cells: show;margin-top: -20px;" cellspacing="0" cellpadding="0" border="0">
+				<tr class='encabezadorojo'>
+					<td colspan='2' style="height:35px; text-align:center; border-top-right-radius:15px; border-top-left-radius:15px; position:relative;">
+						Pago
+						<img src='images/xcierre.png' style='position:absolute; top:2px; right:5px; cursor:pointer;' onclick='$("#pay").fadeOut();'/>
+						<table width="100%" cellpadding="0" cellspacing="0" style='display:none;'>
+							<tr>
+								<td style="width:20%;">
+								</td>
+								<td width="30%" style="display: none;">
+									Nombre: <span id="payClientName"></span>
+								</td>
+								<td width="30%" style="display: none;">
+									Cedula: <span id="payClientIDCard"></span>
+								</td>
+								<td style="width: 80%;">
+									Factura: #
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td width='50%' style='background-color:#E0DEDE; color:#58595B; border-right:1px solid #909192; padding:5px;' align='right'><b>Factura No.</b></td><td style='background-color:#E0DEDE; color:#58595B; padding:5px;' align='left'><span id="invoiceNr"></span></td>
+				</tr>
+				<tr>
+					<td colspan='2'>
+						<table cellpadding="0px" cellspacing="0px" height="100%" align='center'>
+							<tr>
+								<td></td><td><label style='font-size:11px; color:#CCC; font-weight:bold;' id='clientefind'>Consumidor Final</label><br/></td>
+							</tr>
+							<tr>
+								<td valign="middle" align="right">
+								<div class='actiongreenbutton' style='font-size:bold; margin-top:0px; min-height:25px; height:25px; padding-top:3px;' onclick='BuscarCliente(13);'>
+								<span><img src='images/cliente.png'/></span>&nbsp;Cliente
+								</div>
+								</td>
+								<td valign='middle' align='left'>
+									<input class='valor' name='busquedacliente' id='busquedacliente' style='width:200px; height:15px;' maxlength='13' readonly value='9999999999999'/>									
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td style="vertical-align:top; width:120px; height:150px;" colspan='2'>
+						<div class="ventanaformapago">
+							<table style="width:95%;" cellspacing="0" cellpadding="0" id='tablaformaspago'>
+							</table>
+						</div>
+					</td>
+				</tr>
+				<tr>
+					<td colspan='2' style='padding-bottom:10px;'>
+						<table class="cuadrototal" border="0" cellpadding="0px" cellspacing="0px">
+							<tr>
+								<td class="totalsmall" colspan='2' align='center' valign='middle' style='font-size:24px;'>
+								<table class="totalvista" border="0" cellpadding="0" cellspacing="0" align='center'>
+									<tr>
+									<td>
+									TOTAL&nbsp;
+									</td>
+											<td id="invoiceTotal" class="payOverview">
+												0.00
+											</td>
+										</tr>
+									</table>
+								</td>
+							</tr>
+							<tr>
+								<td class="vue" style='padding-right:18px; border-top-right-radius:0px; border-bottom-right-radius:0px; background-color:#E0DEDE;' align='right'>
+									 PAGADO
+								</td>
+								<td id="invoicePaid" class='vue' style='padding-left:20px; border-top-left-radius:0px; border-bottom-left-radius:0px;' align='right'>
+									0.00
+								</td>
+							</tr>
+							<tr >
+								<td id="invoiceDebt" class="vue" style='padding-right:18px; border-top-right-radius:0px; border-bottom-right-radius:0px; background-color:#E0DEDE;' align='right'>
+									FALTANTE
+								</td>
+								<td id="changeFromPurchase" class='vue' style='padding-left:20px; border-top-left-radius:0px;border-bottom-left-radius:0px;' align='right'>
+									0
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="3" style="vertical-align: middle; height: 50px; background-color: #E0DEDE;">						
+                        <div style="position: relative;margin: 5px auto;width: 300px;">
+							<table align='center'>
+                            <tr>
+                                <td>
+        						<div style="width:80px; min-width:80px; height:30px; min-height:30px; float:right; padding-top:5px;" id="payButton" class="actiongreenbutton" onclick="performPurchase('table'); return false;">Pagar</div>
+    							</td>
+                                <td>
+        						    <div style="display:none; min-width:80px; width:80px; height:30px; min-height:30px; padding-top:5px;" id="payButtonActivated" class='actiongreenbutton'>Pagar</div>
+                                </td>
+                                <td>
+    							    <div id="cancelButton" class='actionredbutton' onclick="cancelPayment(); return false;" style='min-width:80px; width:80px; height:30px; min-height:30px; padding-top:5px;'>Cancelar</div>
+                                </td>
+    						</tr>
+                        </table>
+                        </div>
+					</td>
+				</tr>
+			</table>
+		</form>
+	</div>
+</div>
+<div id="ModuloCierre" style="position:absolute; top:0px; left:0px; width:100%; background-color:rgba(255,255,255,0.8); text-align:center; height:100%; display:none;">
+<div class='divcierre' style='position:relative;'>
+	Ama
+	<div class='headerPopup'>Cierre de Caja</div>
+	<img src='../../images/xcierre.png' style='cursor:pointer;  position:absolute; right:5px; top:2px;' onclick='$("#ModuloCierre").hide();'/>
+	<table cellspacing='0px' cellpadding='0px' width='100%'>
+	<tr><td valign='top' width='18%'>
+		<table cellpadding='0px' cellspacing='0px' width='100%' id='menu'>
+			<tr><td height='50px'><!--<div id='btnforma0' class='buttons' onclick='Desplazar(0);' style='color:#808284; font-weight:bold;  font-size:14px;'>Totales</div>--></td></tr>
+		</table>
+	</td>
+	<td valign='top' style='position:relative; overflow:hidden;'>
+		<div id='forma0' style='position:absolute; top:0px; left:0px; width:100%;' class='divformas'>
+			<br/>
+			<table width='75%' cellspacing='10px' cellpadding='0px' align='center'>
+			<tr>
+			</tr>
+			</table>
+			<br/>
+			<table align='center' cellspacing='0px' cellpadding='0px'><tr><td align='right'><div class='labelgris' style='width:180px; height:27px; font-size:18px;' id='labelgris'>Cantidad</div></td><td><input class='valor' type='number' min='0' onkeypress='soloNumerost(event);' style='width:180px; text-align:right; font-size:20px; height:25px; padding-right:10px;' value='0' id='nmonedas' den='' idden='' onchange='ColocarCantidad();'/></td></tr>
+			</table>
+			<br/>
+			<div style='font-size:20px; font-weight:bold; text-align:center;'> Total Efectivo: $ <input id='totalEfectivo' class='totalesc' value='0.00' elemento='subtotales' formapago='0' style='width:150px; border:none; font-size:20px; font-weight:bold;'/></div>
+			<br/>
+			<div align='center'>
+			<div class='actionredbutton' style='width:70px; min-height:10px; padding:5px;' onclick='Desplazar(0);'>Ver Totales</div>
+			</div>
+			<br/>
+		</div>
+		<div id='forma0' style='position:absolute; top:0px; left:-1000px; width:100%;' class='divformas'>
+		<br/>
+			<table align='center' width='40%' cellpadding='0px' cellspacing='0px'>
+				<tr class='tablaenc'><td><b>Forma Pago</b></td><td align='right' style='padding-right:10px;'><b>Valor</b></td></tr>
+			</table>
+			<br/>
+			<div style='font-size:20px; font-weight:bold; text-align:center;'> Total USD <span id='totalCierre' class='totalesc'>0.00</span></div>
+			<br/>
+			<div align='center'>
+			<div class='actionredbutton' style='min-height:20px;' onclick='CerrarCaja();'>Cerrar Caja</div>
+			</div>
+		</div>
+	</td>
+	</tr>
+	</table>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<script>
+	init();
+</script>

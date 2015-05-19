@@ -1,0 +1,121 @@
+﻿<div id="mainDiv" style="margin: 0px; padding: 0px; width:100%; height: 800px; background-color: #ffffff; font-size:14px; color:#404041;">
+		<table style="width:100%;" border="0" cellpadding='10px' class='table table-striped'>
+			<tr><td colspan='3'><h3 id='titulocliente'>Nuevo Cliente</h3></td></tr>		
+			<tr>
+			<td style="text-align:center; vertical-align:middle;">
+			<table style='width:100%; font-size:13px; text-align:center;' class='table'>
+				<tbody>
+					<tr>
+						<td style='vertical-align:middle;'>
+							<input style='display:none;' id='idcliente' name='idcliente'/>
+							<input class="form-control" type="text" autofocus=""  placeholder="Apellido y Nombre(*)" name='nombrecliente' id='nombrecliente'>
+						</td>
+					</tr>
+					<tr>
+						<td style='vertical-align:middle;'>
+							<input class="form-control" type="number" autofocus=""  placeholder="Cédula(*)" name='cedulacliente' id='cedulacliente'>
+						</td>
+					</tr>
+					<tr>
+						<td style='vertical-align:middle;'>
+							<input class="form-control" type="number" autofocus=""  placeholder="Teléfono" name='telefono' id='telefono' onkeypress="return soloNumerosprecio(event);" maxlength='10'>
+						</td>
+					</tr>
+					<tr>
+						<td style='vertical-align:middle;'>
+							<input class="form-control" type="text" autofocus=""  placeholder="Dirección" id="direccion" name="direccion"/>
+						</td>
+					</tr>
+					<tr>
+						<td style='vertical-align:middle;'>
+							<input class="form-control" type="text" autofocus=""  placeholder="Email(*)" id="email" name="email"/>
+						</td>
+					</tr>
+					<tr>
+						<td style='vertical-align:middle;'>
+							<button id='guardar' class="btn btn-primary btn-md" type='button' onclick='GuardaCliente();'>Guardar</button>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<div id='jsalert' style='display:none;' class="alert alert-danger" role="alert" style='font-size:12px;'></div>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+			</td>
+			</tr>
+		</table>
+</div>
+<script>
+function GuardaCliente(){
+	if($('#idcliente').val()==''||$('#idcliente').val()==0){
+	var nombrep=$('#nombrecliente').val();
+	var cedulap=$('#cedulacliente').val();
+	var telefonop=$('#telefono').val();
+	var direccionp=$('#direccion').val();
+	var emailp=$('#email').val();
+	if(nombrep!=''&&cedulap!=''&&emailp!=''){
+		var db = window.openDatabase("Database", "1.0", "PractisisMobile", 200000);
+			db.transaction(function(tx){
+			tx.executeSql('INSERT INTO CLIENTES(nombre,telefono,direccion,email,cedula,existe) SELECT "'+nombrep+'","'+telefonop+'","'+direccionp+'","'+emailp+'","'+cedulap+'",0 WHERE NOT EXISTS(SELECT 1 FROM CLIENTES WHERE nombre = "'+nombrep+'" or cedula="'+cedulap+'" or email="'+emailp+'" );',[],function(tx,results){
+				console.log("cliente:"+results.insertId);
+				});
+			},errorCB,successCB);
+	}else{
+		$('#jsalert').html("Por favor complete los datos requeridos(*).");
+		setTimeout(function(){$('#jsalert').effect('highlight',{color:'white'},1000);},500);
+		setTimeout(function(){$('#jsalert').fadeOut('slow');},4000);
+	}
+	}else{
+		ActualizarCliente();
+	}
+}
+
+function ActualizarCliente(){
+	var idcliente=$('#idcliente').val();
+	var nombrep=$('#nombrecliente').val();
+	var telefonop=$('#telefono').val();
+	var emailp=$('#email').val();
+	var direccionp=$('#direccion').val();
+	var cedulap=$('#cedulacliente').val();
+	if(nombrep!=''&&emailp!=''&&cedulap!=''){
+		var db = window.openDatabase("Database", "1.0", "PractisisMobile", 200000);
+		db.transaction(function(tx){
+			tx.executeSql('UPDATE CLIENTES SET nombre="'+nombrep+'",telefono="'+telefonop+'",email="'+emailp+'",direccion="'+direccionp+'",cedula="'+cedulap+'" WHERE id="'+idcliente+'" AND NOT EXISTS(SELECT 1 FROM CLIENTES WHERE (cedula like "'+cedulap+'" or email like "'+emailp+'") and id!="'+idcliente+'");',[],function(tx,results){
+				console.log("cliente:"+idcliente);
+				VerDatosCliente(idcliente);
+				$('#jsalert').html("Datos actualizados con éxito.");
+				setTimeout(function(){$('#jsalert').effect('highlight',{color:'white'},1000);},500);
+				setTimeout(function(){$('#jsalert').fadeOut('slow');},4000);
+			});
+		},errorCB,successCB);
+	}else{
+		$('#jsalert').html("Por favor complete los datos requeridos(*).");
+		setTimeout(function(){$('#jsalert').effect('highlight',{color:'white'},1000);},500);
+		setTimeout(function(){$('#jsalert').fadeOut('slow');},4000);
+	}
+}
+
+function soloNumerosprecio(e){
+	key = e.keyCode || e.which;
+    if(key==44){
+    document.getElementById('precioproducto').value=document.getElementById('precioproducto').value+'.';
+    }
+	tecla = String.fromCharCode(key).toLowerCase();
+	letras = "0123456789";
+	especiales = [8,9,37,39,46];
+
+	tecla_especial = false
+	for(var i in especiales){
+	    if(key == especiales[i]){
+		tecla_especial = true;
+		break;
+
+            }
+	}
+    if(letras.indexOf(tecla)==-1 && !tecla_especial){
+	    return false;
+	}
+}
+</script>

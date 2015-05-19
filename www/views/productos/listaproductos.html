@@ -1,0 +1,187 @@
+﻿<style>
+.fa-edit{
+	color:#23ae89;
+}
+.fa-edit:hover{
+	color:#404041;
+}
+</style>
+<div id="mainDiv" style="margin: 0px; padding: 0px; width:100%; height: 800px; background-color: #ffffff; font-size:14px;">
+		<table style="width:100%;" border="0" cellpadding='10px' class='table table-striped'>
+			<tr><td colspan='3'><h3>Lista de Productos</h3></td></tr>			
+			<tr>
+				<td style="text-align: right; vertical-align:middle; width: 450px;">
+					<!--<select id="categoryType" class='selectpicker'>
+						<option value="0">Todas las categorías</option>
+					</select>-->
+					<!-- Single button -->
+					<select id='listacategorias' style='font-size:15px;'>
+						<option value='0'>Todas las categorias</option>
+					</select>
+				</td>
+				<td style="text-align: left; vertical-align:middle; width: 550px;">
+					<table style="margin-left: 0px; margin-right: auto;" border="0" cellpadding="4px" cellspacing="10px">
+						<tr>
+							<td style='vertical-align:middle;'>
+								<input placeholder='busqueda' type="text" class='form-control' id="searchKeyword" name="category"/>
+							</td>
+							<td  style='vertical-align:middle;'>
+								<button type='button' class="btn btn-primary" onclick="page=0; getSearch(); return false;">Buscar</button>
+								<!--<input type="image" style="padding: 0px; margin: 0px;" onclick="getSearch(); return false;" alt="Search" src="gfx/search.png"/>-->
+							</td>
+						</tr>
+					</table>
+				</td>
+			</tr>
+			<tr>
+				<td colspan="2">
+					<div id="detailDiv" style="height:650px; padding-top:20px; margin:0px; font-size:15px;"></div>
+				</td>
+			</tr>
+			<tr>
+				<td colspan="2" style='text-align:center;'>
+					<ul class="pagination paginacion-lg" id='paginacion'>
+					</ul>
+					<input id='totalpags' style='display:none;'/>
+				</td>
+			</tr>
+		</table>		
+</div>
+
+<script type="text/javascript">
+var page=0;
+ListarCategorias();
+getSearch();
+
+function ListarProductos(){
+	var db = window.openDatabase("Database", "1.0", "PractisisMobile", 200000);
+	db.transaction(function(tx){
+	tx.executeSql('SELECT p.*,c.categoria as nombrec FROM PRODUCTOS p,CATEGORIAS c WHERE p.categoriaid=c.id ORDER BY p.formulado ASC LIMIT 0,15;',[],function(tx,results){
+		//console.log(results.rows.length);
+		var inhtml='';
+		for (var i=0; i < results.rows.length; i++){
+			   var row = results.rows.item(i);
+			   var checkiva='';
+			   var checkprfinal='';
+			   var checkmatprima='';
+			   if(row.cargaiva==1)
+					checkiva='checked';
+			   if(row.productofinal==1)
+					checkprfinal='checked';
+			   if(row.materiaprima==1)
+					checkmatprima='checked';
+				var catname='';
+			   inhtml+='<tr><td>'+row.formulado+'</td><td>'+row.codigo+'</td><td>'+row.nombrec+'</td><td style="text-align:right">'+parseFloat(row.precio).toFixed(2)+'</td><td style="text-align:center"><input disabled type="checkbox" '+checkiva+'/></td><td><span class="fa fa-edit"></span></td></tr>';
+			   /*<td style="text-align:center"><input disabled type="checkbox" '+checkprfinal+'/></td><td style="text-align:center"><input disabled type="checkbox" '+checkmatprima+'/></td><td><span class="fa fa-edit"></span></td></tr>';*/
+		}
+		LlenarTablaProd(inhtml);
+		});
+    },errorCB,successCB);
+}
+
+function LlenarTablaProd(datos){
+	$('#detailDiv').html("<table align='center' class='table'><tr><th>Nombre</th><th>Código</th><th>Categoría</th><th style='text-align:right;'>Precio</th><th style='text-align:center'>Aplica IVA</th><th><span class='fa fa-cog'></span></th>"+datos+"</table>");
+}
+
+function ListarCategorias(){
+	var db = window.openDatabase("Database", "1.0", "PractisisMobile", 200000);
+	db.transaction(function(tx){
+	tx.executeSql('SELECT * FROM CATEGORIAS ORDER BY id asc;',[],function(tx,results){
+		//console.log(results.rows.length);
+		var inhtml='';
+		for (var i=0; i < results.rows.length; i++){
+			var row=results.rows.item(i);
+			inhtml+='<option value="'+row.id+'">'+row.categoria+'</option>';
+		}
+		LlenarComboCat(inhtml);
+	});
+	},errorCB,successCB);
+}
+
+function LlenarComboCat(options){
+	$('#listacategorias').append(options);
+}
+function getSearch(){
+	var filtro=$('#searchKeyword').val();
+	var categoria=$('#listacategorias').val();
+	var desde=15*page;
+	var queryextra=' p.id is not NULL';
+	if(filtro!='')
+		queryextra+=' and (p.formulado like "%'+filtro+'%" or p.codigo like "%'+filtro+'%")';
+	if(categoria!=0)
+		queryextra+=' and p.categoriaid='+categoria;
+
+	var db = window.openDatabase("Database", "1.0", "PractisisMobile", 200000);
+	db.transaction(function(tx){
+		tx.executeSql('SELECT p.*,c.categoria as nombrec FROM PRODUCTOS p,CATEGORIAS c WHERE '+queryextra+' and p.categoriaid=c.id ORDER BY p.formulado asc',[],function(tx,result){
+			$('#paginacion').html('');
+			var npags=Math.ceil(result.rows.length/15);
+			$('#totalpags').val(npags);
+			$('#paginacion').append("<li onclick='CambiarPagina(-1);'><span class='enabled' id='atras'>&laquo;</span></li>");
+			for(var j=0;j<npags;j++){
+				var act='';
+				if(page==j)
+					act='active';
+				$('#paginacion').append("<li class='"+act+"' onclick='CambiarPagina("+parseInt(j)+");'><span class='enabled'>"+parseInt(j+1)+"</span></li>");
+			}
+			$('#paginacion').append("<li onclick='CambiarPagina(-2);'><span class='enabled' id='adelante'>&raquo;</span></li>");
+		});
+	},errorCB,successCB);
+	
+	
+	db.transaction(function(tx){
+	tx.executeSql('SELECT p.*,c.categoria as nombrec FROM PRODUCTOS p,CATEGORIAS c WHERE '+queryextra+' and p.categoriaid=c.id ORDER BY p.formulado desc LIMIT '+desde+',15;',[],function(tx,results){
+		//console.log(results);
+		var inhtml='';
+		for (var i=0; i < results.rows.length; i++){
+			var row = results.rows.item(i);
+			var checkiva='';
+			var checkprfinal='';
+			var checkmatprima='';
+			if(row.cargaiva==1)
+					checkiva='checked';
+			if(row.productofinal==1)
+					checkprfinal='checked';
+			if(row.materiaprima==1)
+					checkmatprima='checked';
+			var catname='';
+			inhtml+='<tr><td>'+row.formulado+'</td><td>'+row.codigo+'</td><td>'+row.nombrec+'</td><td style="text-align:right">'+parseFloat(row.precio).toFixed(2)+'</td><td style="text-align:center"><input disabled type="checkbox" '+checkiva+'/></td><td><span class="fa fa-edit" style="cursor:pointer;" onclick="EditarProducto('+row.id_local+');"></span></td></tr>';
+			/*<td style="text-align:center"><input disabled type="checkbox" '+checkprfinal+'/></td><td style="text-align:center"><input disabled type="checkbox" '+checkmatprima+'/></td><td><span class="fa fa-edit" style="cursor:pointer;" onclick="EditarProducto('+row.id+');"></span></td></tr>';*/
+		}
+		LlenarTablaProd(inhtml);
+	});
+	},errorCB,successCB);
+}
+
+function CambiarPagina(arg){
+	//console.log($('#totalpags').val());
+	if(arg==-1){
+		if((page-1)>=0){
+			page--;
+			getSearch();
+		}
+	}else if(arg==-2){
+		//console.log($('#totalpags').val());
+		if((page+1)<parseInt($('#totalpags').val())){
+			page++;
+			getSearch();
+		}
+	}else{
+		page=arg;
+		getSearch();
+	}
+	
+}
+
+function EditarProducto(idpr){
+	$('#content').load("views/productos/nuevoproducto.html",function(){
+		VerDatosProducto(idpr);
+	});
+}
+
+$(document).keyup(function(event){
+	if(event.keyCode === 13){
+		getSearch();
+		}
+});
+</script>

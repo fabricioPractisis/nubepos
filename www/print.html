@@ -1,0 +1,29 @@
+<!DOCTYPE HTML>
+
+<html>
+
+<head>
+  <title>Untitled</title>
+  <!--<script src="cordova.js" type="text/javascript"></script>-->
+  <script src="js/printer.js" type="text/javascript"></script>
+  <script type="text/javascript">
+  function printdoc(e)
+  {
+          var page = document.body.innerHTML;
+
+      // Pass the HTML
+      window.plugin.printer.print(page);
+  }
+  </script>
+</head>
+
+<body>
+
+hola
+<!--<a id="printbtn" data-role="button" data-bind="click:printdoc">-->
+<input id="print" name="print" type="button" value="Print" onclick="printdoc(event);">
+<!--</a>-->
+
+</body>
+
+</html>

@@ -1,0 +1,240 @@
+<div class="page page-dashboard" data-ng-controller="DashboardCtrl">
+    <!-- stats -->
+    <div class="row">
+	    <div class="col-lg-3 col-xsm-6">
+            <div class="panel mini-box">
+                <span class="box-icon bg-danger">
+                    <i class="fa fa-shopping-cart"></i>
+                </span>
+                <div class="box-info">
+                    <p class="size-h3">10,262</p>
+                    <p class="text-muted"><span data-i18n="Ventas $">Ventas $</span></p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-xsm-6">
+            <div class="panel mini-box">
+                <span class="box-icon bg-success">
+                    <i class="fa fa-credit-card"></i>
+                </span>
+                <div class="box-info">
+                    <p class="size-h3">5.25<span class="size-h4"></span></p>
+                    <p class="text-muted"><span data-i18n="Ticket Promedio $">Ticket Promedio $</span></p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-xsm-6">
+            <div class="panel mini-box">
+                <span class="box-icon bg-info">
+                    <i class="fa fa-users"></i>
+                </span>
+                <div class="box-info">
+                    <p class="size-h3">78</p>
+                    <p class="text-muted"><span data-i18n="Transacciones"></span></p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-xsm-6">
+            <div class="panel mini-box">
+                <span class="box-icon bg-warning">
+                    <i class="fa fa-dollar"></i>
+                </span>
+                <div class="box-info">
+                    <p class="size-h3">1,550</p>
+                    <p class="text-muted"><span data-i18n="Utilidad $"></span></p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- end stats -->
+
+    <div class="row">
+        <div class="col-md-8">
+            <section class="panel panel-default">
+                <div class="panel-heading"><strong><span class="glyphicon glyphicon-th"></span> <span data-i18n="Ventas"></span></strong></div>
+                <div class="panel-body" data-ng-controller="morrisChartCtrl">
+                        <div id="chartventas"></div>
+                </div>
+            </section> 
+        </div>
+        <div class="col-md-4">
+
+            <div class="panel panel-default">
+                <div class="panel-heading"><strong><span class="glyphicon glyphicon-th"></span> <span data-i18n="Rank Productos"></span></strong></div>
+                <div class="panel-body"  data-ng-controller="flotChartCtrl">
+					<table class="table">
+					<thead>
+						<tr>
+							<th>Producto</th>
+							<th>Cantidad</th>
+							<th>Ventas US$</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>       
+							<td>Producto 1</td>
+							<td align="right">125</td>
+							<td align="right">325.45</td>
+						</tr>
+						<tr>       
+							<td>Producto 2</td>
+							<td align="right">78</td>
+							<td align="right">315.45</td>
+						</tr>
+						<tr>       
+							<td>Producto 3</td>
+							<td align="right">152</td>
+							<td align="right">302.24</td>
+						</tr>
+						<tr>       
+							<td>Producto 4</td>
+							<td align="right">102</td>
+							<td align="right">215.25</td>
+						</tr>
+						<tr>       
+							<td>Producto 5</td>
+							<td align="right">99</td>
+							<td align="right">199.36</td>
+						</tr>
+						<tr>       
+							<td>Producto 6</td>
+							<td align="right">99</td>
+							<td align="right">199.36</td>
+						</tr>
+						<tr>       
+							<td>Producto 7</td>
+							<td align="right">99</td>
+							<td align="right">199.36</td>
+						</tr>
+							</tbody>
+							</table>
+							
+			</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+	  <div class="col-md-4">
+		    <div class="panel panel-default">
+                <div class="panel-heading"><strong><span class="glyphicon glyphicon-th"></span> <span data-i18n="Contribución a Utilidad"></span></strong></div>
+                <div class="panel-body"  data-ng-controller="flotChartCtrl">
+		<table class="table">
+					<thead>
+						<tr>
+							<th>Categoría</th>
+							<th>% Contrib.</th>
+							<th>Utilidad US$</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>       
+							<td>Lacteos</td>
+							<td align="right">15%</td>
+							<td align="right">125.59</td>
+						</tr>
+						<tr>       
+							<td>Cárnicos</td>
+							<td align="right">12%</td>
+							<td align="right">120.21</td>
+						</tr>
+						<tr>       
+							<td>Galletas</td>
+							<td align="right">152</td>
+							<td align="right">302.24</td>
+						</tr>
+						<tr>       
+							<td>Gaseosas</td>
+							<td align="right">102</td>
+							<td align="right">215.25</td>
+						</tr>
+						<tr>       
+							<td>Munchies</td>
+							<td align="right">99</td>
+							<td align="right">199.36</td>
+						</tr>
+							</tbody>
+							</table>
+			</div>
+            </div>
+            
+        </div>
+        <div class="col-md-4">
+				
+                      <section class="panel panel-box info-box">
+                        <div class="panel-left panel-item bg-success">
+                            <i class="fa fa-rocket text-large stat-icon"></i>
+                        </div>
+                        <div class="panel-right panel-item bg-reverse">
+                            <p class="size-h2 no-margin">80<span class="size-h3">%</span></p>
+                            <p class="text-muted no-margin"><span data-i18n="Utilidad de Ventas"></span></p>
+                        </div>
+                    </section>
+					<section class="panel panel-box info-box">
+						<div class="panel-left panel-item bg-info">
+							<i class="fa fa-users text-large stat-icon">
+							</i>
+						</div>
+					<div class="panel-right panel-item bg-reverse">
+					<p class="size-h2 no-margin">132</p>
+					<p class="text-muted no-margin"><span data-i18n="Inventario Final US$"></span></p>
+					</div>
+				   </section>
+			</div>
+		<div class="col-md-4">
+				   <section class="panel panel-box info-box">
+						<div class="panel-left panel-item bg-warning">
+							<i class="fa fa-dollar text-large stat-icon">
+							</i>
+						</div>
+						<div class="panel-right panel-item bg-reverse">
+							<p class="size-h2 no-margin">93,760</p>
+							<p class="text-muted no-margin"><span data-i18n="Costo de Ventas US$"></span></p>
+						</div>
+				</section>
+				<section class="panel panel-box info-box">
+					<div class="panel-left panel-item bg-danger">
+						<i class="fa fa-shopping-cart text-large stat-icon"></i>
+					</div>
+					<div class="panel-right panel-item bg-reverse">
+						<p class="size-h2 no-margin">369</p>
+						<p class="text-muted no-margin"><span data-i18n="Compras del Período US$"></span></p>
+					</div>
+		</section>				
+        </div>
+      
+
+    </div>
+
+
+
+    
+
+</div>
+<script>
+new Morris.Area({
+  // ID of the element in which to draw the chart.
+  element: 'chartventas',
+  // Chart data records -- each entry in this array corresponds to a point on
+  // the chart.
+  data: [
+    { x: '04/02', ventas: 457.10 },
+    { x: '05/02', ventas: 380.25 },
+    { x: '06/02', ventas: 125.58 },
+    { x: '07/02', ventas: 275.12 },
+    { x: '08/02', ventas: 189.25 },
+	{ x: '09/02', ventas: 129.25 },
+	{ x: '10/02', ventas: 183.25 }
+  ],
+  // The name of the data record attribute that contains x-values.
+  xkey: 'x',
+  // A list of names of data record attributes that contain y-values.
+  ykeys: ['ventas'],
+  // Labels for the ykeys -- will be displayed when you hover over the
+  // chart.
+  labels: ['ventas'],
+  parseTime: false,
+  lineColors: ['#E94B3B']
+});
+</script>
+  

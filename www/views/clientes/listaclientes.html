@@ -1,0 +1,121 @@
+﻿<style>
+.fa-edit{
+	color:#23ae89;
+}
+.fa-edit:hover{
+	color:#404041;
+}
+</style>
+<div id="mainDiv" style="margin: 0px; padding: 0px; width:100%; height: 800px; background-color: #ffffff; font-size:14px; color:#404041;">
+		<table style="width:100%;" border="0" cellpadding='10px' class='table table-striped'>
+			<tr><td colspan='3'><h3>Lista de Clientes</h3></td></tr>			
+			<tr>
+				<td style="text-align:center; vertical-align:middle; width: 550px;">
+					<table style="text-align:center;margin-left: 0px; margin-right: auto;" border="0" cellpadding="4px" cellspacing="10px">
+						<tr>
+							<td style='vertical-align:middle;'>
+								<input placeholder='busqueda' type="text" class='form-control' id="searchKeyword" name="category"/>
+							</td>
+							<td  style='vertical-align:middle;'>
+								<button type='button' class="btn btn-primary" onclick="page=0; getSearch(); return false;">Buscar</button>
+							</td>
+						</tr>
+					</table>
+				</td>
+			</tr>
+			<tr>
+				<td colspan="2">
+					<div id="detailDiv" style="height:650px; padding-top:20px; margin:0px; font-size:15px;"></div>
+				</td>
+			</tr>
+			<tr>
+				<td colspan="2" style='text-align:center;'>
+					<ul class="pagination paginacion-lg" id='paginacion'>
+					</ul>
+					<input id='totalpags' style='display:none;'/>
+				</td>
+			</tr>
+		</table>		
+</div>
+
+<script type="text/javascript">
+var page=0;
+getSearch();
+
+function getSearch(){
+	var filtro=$('#searchKeyword').val();
+	var desde=15*page;
+	var queryextra=' id is not NULL';
+	if(filtro!='')
+		queryextra+=' and (nombre like "%'+filtro+'%" or cedula like "%'+filtro+'%")';
+		
+	var db = window.openDatabase("Database", "1.0", "PractisisMobile", 200000);
+	db.transaction(function(tx){
+		tx.executeSql('SELECT * FROM CLIENTES WHERE '+queryextra+' ORDER BY nombre asc',[],function(tx,result){
+			$('#paginacion').html('');
+			var npags=Math.ceil(result.rows.length/15);
+			$('#totalpags').val(npags);
+			$('#paginacion').append("<li onclick='CambiarPagina(-1);'><span class='enabled' id='atras'>&laquo;</span></li>");
+			for(var j=0;j<npags;j++){
+				var act='';
+				if(page==j)
+					act='active';
+				$('#paginacion').append("<li class='"+act+"' onclick='CambiarPagina("+parseInt(j)+");'><span class='enabled'>"+parseInt(j+1)+"</span></li>");
+			}
+			$('#paginacion').append("<li onclick='CambiarPagina(-2);'><span class='enabled' id='adelante'>&raquo;</span></li>");
+		});
+	},errorCB,successCB);
+	
+	
+	db.transaction(function(tx){
+	tx.executeSql('SELECT * FROM CLIENTES WHERE '+queryextra+' ORDER BY nombre asc LIMIT '+desde+',15;',[],function(tx,results){
+		//console.log(results);
+		var inhtml='';
+		for (var i=0; i < results.rows.length; i++){
+			var row = results.rows.item(i);
+			var func="EditarCliente("+row.id+");";
+			if(row.cedula=='9999999999999')
+				func='';
+			inhtml+='<tr><td>'+row.nombre+'</td><td>'+row.cedula+'</td><td>'+row.telefono+'</td><td>'+row.direccion+'</td><td>'+row.email+'</td><td><span class="fa fa-edit" style="cursor:pointer;" onclick="'+func+'"></span></td></tr>';
+		}
+		LlenarTablaClientes(inhtml);
+	});
+	},errorCB,successCB);
+}
+
+function LlenarTablaClientes(datos){
+	$('#detailDiv').html("<table align='center' class='table'><tr><th>Nombre</th><th>Cédula</th><th>Teléfono</th><th>Dirección</th><th>Email</th><th><span class='fa fa-cog'></span></th>"+datos+"</table>");
+}
+
+function CambiarPagina(arg){
+	//console.log($('#totalpags').val());
+	if(arg==-1){
+		if((page-1)>=0){
+			page--;
+			getSearch();
+		}
+	}else if(arg==-2){
+		//console.log($('#totalpags').val());
+		if((page+1)<parseInt($('#totalpags').val())){
+			page++;
+			getSearch();
+		}
+	}else{
+		page=arg;
+		getSearch();
+	}
+	
+}
+
+$(document).keyup(function(event){
+	if(event.keyCode === 13){
+		getSearch();
+		}
+});
+
+function EditarCliente(idcliente){
+	$('#content').load("views/clientes/nuevocliente.html",function(){
+		VerDatosCliente(idcliente);
+	});
+}
+</script>
