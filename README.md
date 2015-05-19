@@ -1,4 +1,0 @@
-# nubepos
-
-
-nube pos 
